@@ -8,7 +8,7 @@ const userResolver = {
   // args = { input }
 
   Query: {
-    authUser: async (_, _, context) => {
+    authUser: async (_, __, context) => {
       try {
         const user = await context.getUser();
         return user;
@@ -28,8 +28,11 @@ const userResolver = {
     },
   },
   Mutation: {
-    signUp: async (_, { SignUpInput }, context) => {
+    signUp: async (_, { input }, context) => {
       try {
+        if (!input) {
+          throw new Error("SignUpInput is required");
+        }
         const { username, name, password, gender } = input;
         if (!username || !password || !gender || !name) {
           throw new Error("All fields are required");
@@ -43,7 +46,7 @@ const userResolver = {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const profilePic = `https://avatar.iran.liara.run/public/${
-          gender == "male" ? boy : girl
+          gender == "male" ? "boy" : "girl"
         }?username=${username}`;
 
         const newUser = new User({
@@ -65,7 +68,9 @@ const userResolver = {
 
     login: async (_, { input }, context) => {
       try {
+        if (!input) throw new Error("Input is required");
         const { username, password } = input;
+        if (!username || !password) throw new Error("All fields are required");
         const { user } = await context.authenticate("graphql-local", {
           username,
           password,
@@ -78,13 +83,13 @@ const userResolver = {
       }
     },
 
-    logout: async (_, { userId }) => {
+    logout: async (_, __, context) => {
       try {
         await context.logout();
-        req.session.destroy((error) => {
+        context.req.session.destroy((error) => {
           if (error) throw error;
         });
-        res.clearCookie("connect.sid");
+        context.res.clearCookie("connect.sid");
         return { message: "Logged out successfully." };
       } catch (error) {
         console.error("Error in logout", error);
