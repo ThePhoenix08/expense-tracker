@@ -1,12 +1,16 @@
 import Transaction from "../models/transaction.model.js";
+import mongoose from "mongoose";
 
 const transactionResolver = {
   Query: {
     transactions: async (_, __, context) => {
       try {
-        if (context.getUser()) throw new Error("User unauthorized");
         const userId = await context.getUser()._id;
-        const transactions = await Transaction.find({ user: userId });
+        if (!userId) throw new Error("User unauthorized");
+
+        const transactions = await Transaction.find({
+          userId: userId,
+        });
         return transactions;
       } catch (error) {
         console.error("Error getting transactions: ", error);
@@ -26,12 +30,14 @@ const transactionResolver = {
   },
   Mutation: {
     createTransaction: async (_, { input }, context) => {
+      const userId = context.getUser()._id;
       try {
         const newTransaction = new Transaction({
           ...input,
-          userId: context.getUser()._id,
+          userId: userId,
         });
         await newTransaction.save();
+        return newTransaction;
       } catch (error) {
         console.error("Error creating transaction", error);
         throw new Error("Error creating transaction");
@@ -39,9 +45,10 @@ const transactionResolver = {
     },
     updateTransaction: async (_, { input }) => {
       try {
+        console.log("Transaction ID: " + input.transactionId);
         const updatedTransaction = await Transaction.findByIdAndUpdate(
           {
-            transactionId: input.transactionId,
+            _id: input.transactionId,
           },
           input,
           { new: true }

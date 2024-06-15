@@ -11,12 +11,10 @@ import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 import { Toaster } from "react-hot-toast";
 
 function App() {
-  const { data } = useQuery(GET_AUTHENTICATED_USER);
-
-  /*   // debug
-  console.log("Loading: " + loading);
-  console.log("Data: " + JSON.stringify(data));
-  console.log("Error: " + error); */
+  const { data, loading } = useQuery(GET_AUTHENTICATED_USER);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -31,7 +29,7 @@ function App() {
           element={!data?.authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
         <Route
-          path="/transaction"
+          path="/transaction/:id"
           element={
             data?.authUser ? <TransactionPage /> : <Navigate to="/login" />
           }
