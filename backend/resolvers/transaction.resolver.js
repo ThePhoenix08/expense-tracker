@@ -1,5 +1,4 @@
 import Transaction from "../models/transaction.model.js";
-import mongoose from "mongoose";
 
 const transactionResolver = {
   Query: {
@@ -26,7 +25,27 @@ const transactionResolver = {
         throw new Error("Error getting transaction.");
       }
     },
-    // TODO => ADD CATEGORY STATISTICS
+    categoryStats: async (_, __, context) => {
+      const user = context.getUser();
+      if (!user) throw new Error("User not authorised");
+      const transactionData = await Transaction.find({
+        userId: user._id,
+      });
+      const categoryMap = {};
+      transactionData.forEach((transaction) => {
+        let { amount, category } = transaction;
+        if (!categoryMap.hasOwnProperty(transaction.category)) {
+          categoryMap[category] = amount;
+        } else {
+          categoryMap[category] += amount;
+        }
+      });
+      console.log(categoryMap);
+      return Object.entries(categoryMap).map(([category, totalAmount]) => ({
+        category,
+        totalAmount,
+      }));
+    },
   },
   Mutation: {
     createTransaction: async (_, { input }, context) => {
@@ -59,7 +78,7 @@ const transactionResolver = {
         throw new Error("Error updating transaction");
       }
     },
-    deleteTransaction: async (_, { transactionId }, context) => {
+    deleteTransaction: async (_, { transactionId }) => {
       try {
         const deletedTransaction = await Transaction.findByIdAndDelete(
           transactionId

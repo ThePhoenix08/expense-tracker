@@ -23,8 +23,12 @@ const TransactionPage = () => {
     date: "",
   });
 
-  const [updateTranFunc, { loading: updating }] =
-    useMutation(UPDATE_TRANSACTION);
+  const [updateTranFunc, { loading: updating }] = useMutation(
+    UPDATE_TRANSACTION,
+    {
+      refetchQueries: ["getCategoryStats"],
+    }
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
