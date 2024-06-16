@@ -96,7 +96,17 @@ const userResolver = {
       }
     },
   },
-  // TODO => ADD USER/TRANSACTION RELATION
+  User: {
+    transactions: async (parent) => {
+      try {
+        const transactions = await Transaction.find({ userId: parent._id });
+        return transactions;
+      } catch (error) {
+        console.log("Erroin user.transactions resolver: ", error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
+  },
 };
 
 export default userResolver;

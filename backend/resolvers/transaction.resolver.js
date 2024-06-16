@@ -89,7 +89,18 @@ const transactionResolver = {
         throw new Error("Error deleting transaction");
       }
     },
-    // TODO => Transaction - User relationships
+  },
+  Transaction: {
+    user: async (parent) => {
+      const userId = parent.userId;
+      try {
+        const user = await User.findById(userId);
+        return user;
+      } catch (error) {
+        console.error("Error getting user: ", error);
+        throw new Error("Error getting user");
+      }
+    },
   },
 };
 

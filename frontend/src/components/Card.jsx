@@ -19,7 +19,7 @@ const categoryColorMap = {
 
 const capitalize = (str) => str[0]?.toUpperCase() + str.slice(1);
 
-const Card = ({ transaction }) => {
+const Card = ({ transaction, profilePicture }) => {
   if (!transaction) return null;
 
   let { description, category, amount, location, paymentType, date } =
@@ -75,7 +75,7 @@ const Card = ({ transaction }) => {
         <div className="flex justify-between items-center">
           <p className="text-xs text-black font-bold">{formatedDate}</p>
           <img
-            src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
+            src={profilePicture}
             className="h-8 w-8 border rounded-full"
             alt=""
           />

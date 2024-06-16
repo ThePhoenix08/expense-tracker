@@ -17,6 +17,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const HomePage = () => {
   const { data, loading: gettingStats } = useQuery(GET_CATEGORYSTATS);
   const { data: authUserData } = useQuery(GET_AUTHENTICATED_USER);
+  const profilePicture = authUserData?.authUser.profilePicture;
 
   const [chartData, setChartData] = useState({
     labels: [],
@@ -35,7 +36,7 @@ const HomePage = () => {
   });
 
   useEffect(() => {
-    if (data?.categoryStats) {
+    if (data?.categoryStats && data.categoryStats.length > 0) {
       const categories = data.categoryStats.map((stat) => stat.category);
       const totalAmounts = data.categoryStats.map((stat) => stat.totalAmount);
 
@@ -91,7 +92,7 @@ const HomePage = () => {
             Spend wisely, track wisely
           </p>
           <img
-            src={authUserData?.authUser.profilePicture}
+            src={profilePicture}
             className="w-11 h-11 rounded-full border cursor-pointer"
             alt="Avatar"
           />
@@ -107,13 +108,17 @@ const HomePage = () => {
           )}
         </div>
         <div className="flex flex-wrap w-full justify-center items-center gap-6">
-          <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
-            <Doughnut data={chartData} />
-          </div>
+          {data.categoryStats.length > 0 ? (
+            <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
+              <Doughnut data={chartData} />
+            </div>
+          ) : (
+            ""
+          )}
 
           <TransactionForm />
         </div>
-        <Cards />
+        <Cards profilePicture={profilePicture} />
       </div>
     </>
   );

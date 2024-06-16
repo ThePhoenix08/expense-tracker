@@ -3,14 +3,12 @@ import Card from "./Card";
 import { GET_TRANSACTIONS } from "../graphql/queries/transaction.query";
 import toast from "react-hot-toast";
 
-const Cards = () => {
+const Cards = ({ profilePicture }) => {
   const { data, loading, error } = useQuery(GET_TRANSACTIONS);
   if (error) {
     toast.error("Failed to fetch transactions");
     return null;
   }
-
-  // TODO => ADD RELATIONSHIPS
 
   return (
     <div className="w-full px-10 min-h-[40vh]">
@@ -23,7 +21,11 @@ const Cards = () => {
             </p>
           ) : (
             data?.transactions.map((transaction) => (
-              <Card key={transaction._id} transaction={transaction} />
+              <Card
+                key={transaction._id}
+                transaction={transaction}
+                profilePicture={profilePicture}
+              />
             ))
           ))}
       </div>
