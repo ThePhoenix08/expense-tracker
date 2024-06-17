@@ -108,7 +108,7 @@ const HomePage = () => {
           )}
         </div>
         <div className="flex flex-wrap w-full justify-center items-center gap-6">
-          {data.categoryStats.length > 0 ? (
+          {data?.categoryStats?.length > 0 ? (
             <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
               <Doughnut data={chartData} />
             </div>

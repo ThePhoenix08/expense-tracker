@@ -4,7 +4,7 @@ const transactionResolver = {
   Query: {
     transactions: async (_, __, context) => {
       try {
-        const userId = await context.getUser()._id;
+        const userId = await context?.getUser()?._id;
         if (!userId) throw new Error("User unauthorized");
 
         const transactions = await Transaction.find({
@@ -40,7 +40,6 @@ const transactionResolver = {
           categoryMap[category] += amount;
         }
       });
-      console.log(categoryMap);
       return Object.entries(categoryMap).map(([category, totalAmount]) => ({
         category,
         totalAmount,
@@ -64,7 +63,6 @@ const transactionResolver = {
     },
     updateTransaction: async (_, { input }) => {
       try {
-        console.log("Transaction ID: " + input.transactionId);
         const updatedTransaction = await Transaction.findByIdAndUpdate(
           {
             _id: input.transactionId,
